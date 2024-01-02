@@ -10,6 +10,7 @@ const app = express();
 //middleware
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use(require("cors")());
 
 //routes
 app.get("/protected", auth, (req, res) => {
@@ -22,7 +23,7 @@ app.get("/", (req, res) => {
 });
 
 //server config
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, async () => {
   try {
     await connectDB();

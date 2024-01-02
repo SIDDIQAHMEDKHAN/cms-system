@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AuthContext from "../context/AuthContext";
 
 const Register = () => {
+  const { registerUser } = useContext(AuthContext);
   const [credentials, setCredentials] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -16,19 +22,54 @@ const Register = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (
+      !credentials.name ||
+      !credentials.email ||
+      !credentials.password ||
+      !credentials.confirmPassword
+    ) {
+      toast.error("Please enter all the required fields");
+      return;
+    }
+
+    if (credentials.password !== credentials.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    const userData = { ...credentials, confirmPassword: undefined };
+    registerUser({ userData });
   };
 
   return (
     <>
+      <ToastContainer autoClose={2000} />
+
       <h3>CREATE YOUR ACCOUNT</h3>
       <form onSubmit={handleSubmit}>
-        <div class="form-group">
-          <label for="emailInput" class="form-label mt-4">
+        <div className="form-group">
+          <label htmlFor="nameInput" className="form-label mt-4">
+            Name
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="nameInput"
+            name="name"
+            value={credentials.name}
+            onChange={handleInputChange}
+            placeholder="Enter name"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="emailInput" className="form-label mt-4">
             Email address
           </label>
           <input
             type="email"
-            class="form-control"
+            className="form-control"
             id="emailInput"
             aria-describedby="emailHelp"
             name="email"
@@ -38,13 +79,13 @@ const Register = () => {
             required
           />
         </div>
-        <div class="form-group">
-          <label for="passwordInput" class="form-label mt-4">
+        <div className="form-group">
+          <label htmlFor="passwordInput" className="form-label mt-4">
             Password
           </label>
           <input
             type="password"
-            class="form-control"
+            className="form-control"
             id="passwordInput"
             name="password"
             value={credentials.password}
@@ -53,19 +94,18 @@ const Register = () => {
             required
           />
         </div>
-        <div class="form-group">
-          <label for="confirmPassword" class="form-label mt-4">
+        <div className="form-group">
+          <label htmlFor="confirmPassword" className="form-label mt-4">
             Confirm Password
           </label>
           <input
             type="password"
-            class="form-control"
+            className="form-control"
             id="confirmPassword"
             name="confirmPassword"
             value={credentials.confirmPassword}
             onChange={handleInputChange}
             placeholder="Enter password"
-            required
           />
         </div>
         <input

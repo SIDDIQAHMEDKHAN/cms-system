@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AuthContext from "../context/AuthContext";
 
 const Login = () => {
+  const { loginUser } = useContext(AuthContext);
   const [credentials, setCredentials] = useState({ email: "", password: "" });
 
   const handleInputChange = (event) => {
@@ -12,19 +17,28 @@ const Login = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (!credentials.email || !credentials.password) {
+      toast.error("Please enter all the required fields");
+      return;
+    }
+
+    loginUser(credentials);
   };
 
   return (
     <>
+      <ToastContainer autoClose={2000} />
+
       <h3>LOGIN</h3>
       <form onSubmit={handleSubmit}>
-        <div class="form-group">
-          <label for="emailInput" class="form-label mt-4">
+        <div className="form-group">
+          <label httpFor="emailInput" className="form-label mt-4">
             Email address
           </label>
           <input
             type="email"
-            class="form-control"
+            className="form-control"
             id="emailInput"
             aria-describedby="emailHelp"
             name="email"
@@ -34,13 +48,13 @@ const Login = () => {
             required
           />
         </div>
-        <div class="form-group">
-          <label for="passwordInput" class="form-label mt-4">
+        <div className="form-group">
+          <label httpFor="passwordInput" className="form-label mt-4">
             Password
           </label>
           <input
             type="password"
-            class="form-control"
+            className="form-control"
             id="passwordInput"
             name="password"
             value={credentials.password}
