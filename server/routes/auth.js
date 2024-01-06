@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-
+const auth = require("../middleware/auth");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
@@ -10,6 +10,7 @@ router.post("/register", async (req, res) => {
 
   //Checking if all the fields are entered
   if (!name || !email || !password) {
+    console.log(name, email, password);
     return res.status(400).json({ error: "Enter all the required fields" });
   }
 
@@ -90,11 +91,17 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    return res.status(200).json({ token });
+    const user = { ...doesUserExist._doc, password: undefined };
+
+    return res.status(200).json({ token, user });
   } catch (error) {
     console.log(err);
     return res.status(500).json({ error: err.message });
   }
+});
+
+router.get("/me", auth, async (req, res) => {
+  return res.status(200).json({ ...req.user._doc });
 });
 
 module.exports = router;
