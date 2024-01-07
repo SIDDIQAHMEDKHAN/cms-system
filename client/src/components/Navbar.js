@@ -29,6 +29,11 @@ const Navbar = ({ title = "CMS" }) => {
           <ul className="navbar-nav ms-auto">
             {user ? (
               <>
+                <li className="nav-item">
+                  <Link to="/create">
+                    <a className="nav-link">Create Contact</a>
+                  </Link>
+                </li>
                 <li
                   className="nav-item"
                   onClick={() => {
