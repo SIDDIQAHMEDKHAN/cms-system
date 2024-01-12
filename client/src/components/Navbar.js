@@ -34,6 +34,11 @@ const Navbar = ({ title = "CMS" }) => {
                     <a className="nav-link">Create Contact</a>
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link to="/mycontact">
+                    <a className="nav-link">All Contacts</a>
+                  </Link>
+                </li>
                 <li
                   className="nav-item"
                   onClick={() => {
