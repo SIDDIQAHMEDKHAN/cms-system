@@ -13,6 +13,7 @@ const AllContact = () => {
       });
       const result = await res.json();
       if (!result.error) {
+        setContacts(result.contacts);
         console.log(result);
       } else {
         console.log(result);

@@ -1,8 +1,12 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import ToastContext from "../context/ToastContext";
 
 const CreateContact = () => {
+  const { user } = useContext(AuthContext);
+  const { toast } = useContext(ToastContext);
+
   const [userDetails, setUserDetails] = useState({
     name: "",
     address: "",
@@ -10,7 +14,6 @@ const CreateContact = () => {
     phone: "",
   });
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -20,19 +23,22 @@ const CreateContact = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const res = fetch(`http://localhost:8000/api/contact`, {
+
+    const res = await fetch(`http://localhost:8000/api/contact`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
-        body: JSON.stringify(userDetails),
       },
+      body: JSON.stringify(userDetails),
     });
     const result = await res.json();
     if (!result.error) {
-      console.log(result);
+      toast.success(`Created [${userDetails.name}] contact`);
+
+      setUserDetails({ name: "", address: "", email: "", phone: "" });
     } else {
-      console.log(result);
+      toast.error(result.error);
     }
   };
 
