@@ -1,10 +1,11 @@
 const { ValidateContact, Contact } = require("../models/Contact");
 const auth = require("../middleware/auth");
+const mongoose = require("mongoose");
 
 const router = require("express").Router();
 
 router.post("/contact", auth, async (req, res) => {
-  const { error } = validateContact(req.body);
+  const { error } = ValidateContact(req.body);
 
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
@@ -65,6 +66,54 @@ router.put("/contact", async (req, res) => {
     });
 
     return res.status(200).json({ ...result._doc });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//Delete contact
+router.delete("/delete/:id", auth, async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ error: "no id specified." });
+
+  if (!mongoose.isValidObjectId(id))
+    return res.status(400).json({ error: "please enter a valid id" });
+  try {
+    const contact = await Contact.findOne({ _id: id });
+    if (!contact) return res.status(400).json({ error: "no contact found" });
+
+    if (req.user._id.toString() !== contact.postedBy._id.toString())
+      return res
+        .status(401)
+        .json({ error: "you can't delete other people contacts!" });
+
+    const result = await Contact.deleteOne({ _id: id });
+    const myContacts = await Contact.find({ postedBy: req.user._id }).populate(
+      "postedBy",
+      "-password"
+    );
+
+    return res
+      .status(200)
+      .json({ ...contact._doc, myContacts: myContacts.reverse() });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//Editing contact
+router.get("/contact/:id", auth, async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ error: "no id specified." });
+
+  if (!mongoose.isValidObjectId(id))
+    return res.status(400).json({ error: "please enter a valid id" });
+  try {
+    const contact = await Contact.findById({ _id: id });
+
+    return res.status(200).json({ ...contact._doc });
   } catch (err) {
     console.log(err);
   }
