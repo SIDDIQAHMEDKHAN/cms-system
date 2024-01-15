@@ -29,8 +29,17 @@ export const AuthContextProvider = ({ children }) => {
       const result = await res.json();
       if (!result.error) {
         // console.log("Authenticated User");
+        if (
+          location.pathname === "/login" ||
+          location.pathname === "/register"
+        ) {
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 500);
+        } else {
+          navigate(location.pathname ? location.pathname : "/");
+        }
         setUser(result);
-        navigate("/", { replace: true });
       } else {
         navigate("/login", { replace: true });
       }

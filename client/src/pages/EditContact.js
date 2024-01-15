@@ -17,6 +17,7 @@ const EditContact = () => {
     phone: "",
   });
   const [loading, setLoading] = useState(false);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
