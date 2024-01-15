@@ -44,21 +44,20 @@ router.get("/mycontacts", auth, async (req, res) => {
 });
 
 //Updating contact
-router.put("/contact", async (req, res) => {
+router.put("/contact", auth, async (req, res) => {
   const { id } = req.body;
 
-  if (!id) return res.status(400).json({ error: "no id specified" });
-
+  if (!id) return res.status(400).json({ error: "no id specified." });
   if (!mongoose.isValidObjectId(id))
     return res.status(400).json({ error: "please enter a valid id" });
+
   try {
     const contact = await Contact.findOne({ _id: id });
 
-    if (req.user._id.toString() !== contact.postedBy._id.toString()) {
+    if (req.user._id.toString() !== contact.postedBy._id.toString())
       return res
         .status(401)
-        .json({ error: "you can't edit other people contacts" });
-    }
+        .json({ error: "you can't edit other people contacts!" });
 
     const updatedData = { ...req.body, id: undefined };
     const result = await Contact.findByIdAndUpdate(id, updatedData, {
